@@ -1,0 +1,5 @@
+JS30.sublime-project
+JS30.sublime-workspace
+.DS_Store
+node_modules/
+*.log
