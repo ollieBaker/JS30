@@ -109,7 +109,10 @@
   }
 
   const keys = document.querySelectorAll('.key');
-  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+  keys.forEach(key => {
+    key.addEventListener('transitionend', removeTransition);
+    key.addEventListener('click', () => playSound({ keyCode:key.dataset.key }));
+  });
   window.addEventListener('keydown', playSound);
   window.addEventListener('keyup', loopOff);
   </script>
