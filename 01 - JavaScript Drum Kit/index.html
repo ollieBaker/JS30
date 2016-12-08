@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JS Drum Kit</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-
-
   <div class="keys">
     <div data-key="65" class="key">
       <kbd>A</kbd>
@@ -46,7 +46,6 @@
       <span class="sound">tink</span>
     </div>
   </div>
-
   <audio data-key="65" src="sounds/clap.wav"></audio>
   <audio data-key="83" src="sounds/hihat.wav"></audio>
   <audio data-key="68" src="sounds/kick.wav"></audio>
@@ -56,28 +55,64 @@
   <audio data-key="74" src="sounds/snare.wav"></audio>
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
-
-<script>
-
+  <script>
+  const transitionClass = 'playing';
+  let loop = false;
+  const loops = {};
 
   function playSound(e) {
+    //if the keyCode is shift turn on loop mode and return early
+    if (e.keyCode === 16) {
+      loop = true;
+      return;
+    }
+
     const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
     const key = document.querySelector(`.key[data-key="${e.keyCode}"]`);
-    if (!audio) return; // stop the fucntion from running all together
-    audio.currentTime = 0; // rewind to the start
-    audio.play();
-    key.classList.add('playing');
+
+    if (audio) {
+      //if the there is a matching keyCode in the loops object stop the interval and delete the keyCode from the object
+      if (loops[e.keyCode]) {
+        clearInterval(loops[e.keyCode]);
+        delete loops[e.keyCode];
+        return;
+      }
+
+      play(audio, key);
+
+      //is loop mode is trye then store the keycode so we can stop the loop later
+      if (loop) {
+        loops[e.keyCode] = setInterval(function() {
+          play(audio, key);
+        }, 500);
+      }
+    }
   }
+
+  function play(audio, key) {
+    audio.currentTime = 0;
+    audio.play();
+    key.classList.add(transitionClass);
+  }
+
   function removeTransition(e) {
-    if (e.propertyName !== 'transform') return; // skip it if it's not a transform
-    this.classList.remove('playing');
+    if (e.propertyName === 'transform') {
+      e.target.classList.remove(transitionClass);
+    }
+  }
+
+
+  function loopOff(e) {
+    if (e.keyCode === 16) {
+      loop = false;
+    }
   }
 
   const keys = document.querySelectorAll('.key');
   keys.forEach(key => key.addEventListener('transitionend', removeTransition));
   window.addEventListener('keydown', playSound);
-
-</script>
-
+  window.addEventListener('keyup', loopOff);
+  </script>
 </body>
+
 </html>
