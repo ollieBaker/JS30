@@ -21,9 +21,8 @@
   const cities = [];
   fetch(endpoint)
     .then(blob => blob.json())
-    .then(data => cities.push(...data));
-
-  //error handling
+    .then(data => cities.push(...data))
+    .catch(error => console.log(error));
 
   function findMatches(wordsToMatch, cities) {
     return cities.filter(place => {
